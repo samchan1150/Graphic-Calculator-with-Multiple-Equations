@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graphic Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+        
+    <!-- Include Math.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+</head>
+<body>
+
+    <h1>Graphic Calculator</h1>
+
+    <div id="calculator">
+        <input type="text" id="equation" placeholder="Enter equation in terms of x (e.g. x^2 + x^3)">
+        <button onclick="drawGraph()">Plot Graph</button>
+    </div>
+
+    <h5> Hover your mouse on the graph to see coordinates </h5>
+
+    <canvas id="graphCanvas" width="700" height="500"></canvas>
+
+    <!-- New value calculator section -->
+    <div id="valueCalculator">
+        <input type="number" id="xValue" placeholder="Enter x value">
+        <button onclick="calculateYValue()">Calculate Y</button>
+        <p id="yValueDisplay"></p>
+    </div>
+
+    <!-- Include the JavaScript code -->
+    <script src="script.js"></script>
+
+</body>
+</html>

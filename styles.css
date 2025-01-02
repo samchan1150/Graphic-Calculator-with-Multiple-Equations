@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+#calculator {
+    margin: 20px;
+}
+#equation {
+    width: 400px;
+    padding: 10px;
+    font-size: 16px;
+}
+#graphCanvas {
+    border: 1px solid #ccc;
+    cursor: grab;
+}
+#graphCanvas:active {
+    cursor: grabbing;
+}
+/* Style for the value calculator */
+#valueCalculator {
+    margin-top: 20px;
+}
+#xValue {
+    width: 200px;
+    padding: 5px;
+    font-size: 16px;
+}
+#yValueDisplay {
+    font-weight: bold;
+    margin-top: 10px;
+}
