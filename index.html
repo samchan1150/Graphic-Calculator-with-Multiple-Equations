@@ -12,20 +12,32 @@
 
     <h1>Graphic Calculator</h1>
 
-    <div id="calculator">
-        <input type="text" id="equation" placeholder="Enter equation in terms of x (e.g. x^2 + x^3)">
-        <button onclick="drawGraph()">Plot Graph</button>
-    </div>
+    <div id="mainContainer" style="display: flex; justify-content: space-between;">
 
-    <h5> Hover your mouse on the graph to see coordinates </h5>
+        <!-- Graph Section -->
+        <div id="graphSection">
+            <canvas id="graphCanvas" width="700" height="500"></canvas>
+            <h5>Hover your mouse on the graph to see coordinates</h5>
+        </div>
 
-    <canvas id="graphCanvas" width="700" height="500"></canvas>
+        <!-- Equation Input Section -->
+        <div id="inputSection" style="width: 300px;">
+            <div id="equationsContainer">
+                <div class="equationEntry">
+                    <input type="text" class="equationInput" placeholder="Enter equation in terms of x (e.g., x^2 + x^3)">
+                </div>
+            </div>
+            <button id="addEquationButton">Add Another Equation</button>
+            <button onclick="drawGraph()">Plot Graph</button>
 
-    <!-- New value calculator section -->
-    <div id="valueCalculator">
-        <input type="number" id="xValue" placeholder="Enter x value">
-        <button onclick="calculateYValue()">Calculate Y</button>
-        <p id="yValueDisplay"></p>
+            <!-- New value calculator section -->
+            <div id="valueCalculator" style="margin-top: 20px;">
+                <input type="number" id="xValue" placeholder="Enter x value">
+                <button onclick="calculateYValue()">Calculate Y</button>
+                <p id="yValueDisplay"></p>
+            </div>
+        </div>
+
     </div>
 
     <!-- Include the JavaScript code -->
