@@ -165,12 +165,13 @@ h1 {
 /* Equation Input */
 .equationInput {
     flex: 1;
-    padding: 8px 12px;
+    padding: 8px 20px;
     background-color: var(--input-background);
     border: 1px solid var(--input-border);
     border-radius: 4px;
     color: var(--primary-text);
-    font-size: 1em;
+    font-size: 15px;
+
 }
 
 .equationInput::placeholder {
@@ -229,6 +230,7 @@ h1 {
 
 /* Value Calculator Section */
 #valueCalculator {
+    width: 20%;
     margin-top: 30px;
     display: flex;
     flex-direction: column;
