@@ -89,6 +89,7 @@ h1 {
 
 #tutorialButton {
     background-color: var(--button-background);
+    color: #ffffffca;
     border: none;
     border-radius: 50%;
     cursor: pointer;
