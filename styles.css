@@ -93,8 +93,10 @@ h1 {
     display: flex;
     align-items: center;
     gap: 10px;
+    position: relative; /* To position the error-message absolutely within */
 }
 
+/* Equation Input */
 .equationInput {
     flex: 1;
     padding: 8px 12px;
@@ -109,7 +111,7 @@ h1 {
     color: var(--secondary-text);
 }
 
-/* Remove Button */
+/* Remove and Toggle Visibility Buttons */
 .removeButton,
 .toggleVisibilityButton {
     background-color: var(--button-background);
@@ -134,9 +136,30 @@ h1 {
     height: var(--icon-size);
 }
 
-/* Hide the eye icon when equation is hidden */
+/* Change Eye Icon Appearance When Hidden */
 .toggleVisibilityButton.hidden img {
-    filter: brightness(0) invert(1);
+    filter: brightness(0) invert(1); /* Invert colors to indicate hidden state */
+}
+
+/* Inline Error Message as Overlay */
+.error-message {
+    position: absolute;
+    top: 100%; /* Position below the equation input */
+    left: 0;
+    background-color: rgba(255, 77, 77, 0.9); /* Semi-transparent red background */
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    margin-top: 5px;
+    display: none; /* Hidden by default */
+    z-index: 10; /* Ensure it overlays other elements */
+}
+
+/* Display Error Message When There is an Error */
+.equationEntry.error .error-message {
+    display: block;
 }
 
 /* Action Buttons */
@@ -236,11 +259,10 @@ button:focus,
 .equationInput:focus,
 #valueCalculator input[type="number"]:focus {
     outline: none;
-    box-shadow: 0 0 0 2px var(--accent-color);
+    box-shadow: 2px var(--accent-color);
 }
 
 /* Smooth Transitions */
 * {
     transition: all 0.3s ease;
 }
-

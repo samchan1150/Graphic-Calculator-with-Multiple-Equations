@@ -1,8 +1,7 @@
 // script.js
 
-// Replace with the actual path to your internal math library if different
-// For example: import math from 'internal-math-library';
-const math = window.math; // Assuming math.js is loaded via script tag in index.html
+// Assuming math.js is loaded via script tag in index.html
+const math = window.math;
 
 // Global variables for zoom and pan
 let xMin = -10;
@@ -29,7 +28,12 @@ document.getElementById('addEquationButton').addEventListener('click', addEquati
 // Initialize the cursor style
 canvas.style.cursor = 'grab';
 
-// Debounce function to limit the rate of function execution
+/**
+ * Debounce function to limit the rate of function execution
+ * @param {Function} func - The function to debounce
+ * @param {number} delay - The delay in milliseconds
+ * @returns {Function}
+ */
 function debounce(func, delay) {
     let debounceTimer;
     return function(...args) {
@@ -39,34 +43,43 @@ function debounce(func, delay) {
     }
 }
 
-// Function to add a new equation input entry
+/**
+ * Adds a new equation input entry to the UI
+ */
 function addEquationInput() {
     const equationsContainer = document.getElementById('equationsContainer');
     const equationEntry = document.createElement('div');
     equationEntry.className = 'equationEntry';
     equationEntry.style.marginTop = '10px';
 
+    // Equation Input
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'equationInput';
     input.placeholder = 'Enter equation in terms of x (e.g., sin(x))';
     input.dataset.visible = 'true'; // Set default visibility
 
+    // Toggle Visibility Button
     const toggleVisibilityButton = document.createElement('button');
     toggleVisibilityButton.className = 'toggleVisibilityButton';
     toggleVisibilityButton.title = 'Toggle Visibility';
     const eyeImg = document.createElement('img');
-    eyeImg.src = 'icons/eye.svg'; // Ensure this path is correct
+    eyeImg.src = 'icons/eye.svg';
     eyeImg.alt = 'Toggle Visibility';
     toggleVisibilityButton.appendChild(eyeImg);
 
+    // Remove Button
     const removeButton = document.createElement('button');
     removeButton.className = 'removeButton';
     removeButton.title = 'Remove Equation';
     const binImg = document.createElement('img');
-    binImg.src = 'icons/bin.svg'; // Ensure this path is correct
+    binImg.src = 'icons/bin.svg';
     binImg.alt = 'Remove';
     removeButton.appendChild(binImg);
+
+    // Inline Error Message
+    const errorMessage = document.createElement('span');
+    errorMessage.className = 'error-message';
 
     // Event listener to remove the equation entry
     removeButton.addEventListener('click', function () {
@@ -86,13 +99,19 @@ function addEquationInput() {
         validateAndDrawGraph(input.value, equationEntry);
     });
 
+    // Append elements to equationEntry
     equationEntry.appendChild(input);
     equationEntry.appendChild(toggleVisibilityButton);
     equationEntry.appendChild(removeButton);
+    equationEntry.appendChild(errorMessage);
+
+    // Append equationEntry to equationsContainer
     equationsContainer.appendChild(equationEntry);
 }
 
-// Function to initialize existing equation entries on page load
+/**
+ * Initializes existing equation entries on page load
+ */
 function initializeEquationEntries() {
     const equationEntries = document.getElementsByClassName('equationEntry');
 
@@ -100,6 +119,7 @@ function initializeEquationEntries() {
         const input = entry.getElementsByClassName('equationInput')[0];
         const toggleVisibilityButton = entry.getElementsByClassName('toggleVisibilityButton')[0];
         const removeButton = entry.getElementsByClassName('removeButton')[0];
+        const errorMessage = entry.getElementsByClassName('error-message')[0];
 
         // Ensure data-visible is set
         if (!input.dataset.visible) {
@@ -126,10 +146,19 @@ function initializeEquationEntries() {
     }
 }
 
-// Function to validate the equation and redraw the graph
+/**
+ * Validates the equation and redraws the graph if valid
+ * Displays inline error messages if invalid
+ * @param {string} equationInput - The equation input by the user
+ * @param {HTMLElement} equationEntry - The parent div of the equation input
+ */
 function validateAndDrawGraph(equationInput, equationEntry) {
+    const errorMessage = equationEntry.getElementsByClassName('error-message')[0];
+
     if (equationInput.trim() === '') {
-        // If the input is empty, simply redraw the graph without this equation
+        // If the input is empty, clear any previous error and redraw the graph
+        errorMessage.textContent = '';
+        equationEntry.classList.remove('error');
         drawGraph();
         return;
     }
@@ -137,23 +166,30 @@ function validateAndDrawGraph(equationInput, equationEntry) {
     try {
         // Attempt to compile the equation
         math.compile(equationInput);
-        // If successful, redraw the graph
+        // If successful, clear error and redraw the graph
+        errorMessage.textContent = '';
+        equationEntry.classList.remove('error');
         drawGraph();
     } catch (error) {
-        // If there's a compilation error, alert the user and possibly highlight the input
-        alert('Invalid equation: "' + equationInput + '". Please check your input.');
-        // Optionally, you can add a class to highlight the erroneous input
+        // If there's a compilation error, display error message inline
+        errorMessage.textContent = `Invalid equation: "${equationInput}". Please check your input.`;
+
+        // Add 'error' class to equationEntry for styling
         equationEntry.classList.add('error');
+
         // Remove the error highlight when the user focuses back on the input
         const input = equationEntry.getElementsByClassName('equationInput')[0];
         input.addEventListener('focus', function removeErrorHighlight() {
             equationEntry.classList.remove('error');
+            errorMessage.textContent = '';
             input.removeEventListener('focus', removeErrorHighlight);
         });
     }
 }
 
-// Function to draw the graph
+/**
+ * Draws the graph based on the current equations and visibility states
+ */
 function drawGraph() {
     // Get all user-entered equations
     const equationEntries = document.getElementsByClassName('equationEntry');
@@ -239,7 +275,12 @@ function drawGraph() {
     });
 }
 
-// Function to draw gridlines
+/**
+ * Draws gridlines on the canvas
+ * @param {CanvasRenderingContext2D} ctx - The canvas context
+ * @param {number} scaleX - The scale factor for the X-axis
+ * @param {number} scaleY - The scale factor for the Y-axis
+ */
 function drawGridlines(ctx, scaleX, scaleY) {
     ctx.beginPath();
     ctx.strokeStyle = '#e0e0e0';
@@ -266,7 +307,12 @@ function drawGridlines(ctx, scaleX, scaleY) {
     ctx.stroke();
 }
 
-// Function to draw axes
+/**
+ * Draws the X and Y axes on the canvas with labels
+ * @param {CanvasRenderingContext2D} ctx - The canvas context
+ * @param {number} scaleX - The scale factor for the X-axis
+ * @param {number} scaleY - The scale factor for the Y-axis
+ */
 function drawAxes(ctx, scaleX, scaleY) {
     ctx.beginPath();
     ctx.strokeStyle = '#000000';
@@ -303,7 +349,12 @@ function drawAxes(ctx, scaleX, scaleY) {
     }
 }
 
-// Function to calculate grid spacing
+/**
+ * Calculates appropriate grid spacing based on the current range
+ * @param {number} min - The minimum value of the axis
+ * @param {number} max - The maximum value of the axis
+ * @returns {number} - The grid spacing
+ */
 function calculateGridSpacing(min, max) {
     const range = Math.abs(max - min);
     const roughSpacing = range / 10;
@@ -315,7 +366,9 @@ function calculateGridSpacing(min, max) {
     return magnitude;
 }
 
-// Function to calculate Y value based on user input
+/**
+ * Calculates Y values based on user input for a specific X value
+ */
 function calculateYValue() {
     // Get the user-entered x value
     const xInput = document.getElementById('xValue').value;
@@ -323,7 +376,7 @@ function calculateYValue() {
 
     // Check if x is a valid number
     if (isNaN(x)) {
-        alert('Please enter a valid number for x.');
+        displayYValueError('Please enter a valid number for x.');
         return;
     }
 
@@ -351,7 +404,19 @@ function calculateYValue() {
     });
 }
 
-// Function to show coordinates when mouse is near the graph
+/**
+ * Displays error messages within the UI for Y value calculations
+ * @param {string} message - The error message to display
+ */
+function displayYValueError(message) {
+    const yDisplay = document.getElementById('yValueDisplay');
+    yDisplay.innerHTML = `<span class="error-message">${message}</span>`;
+}
+
+/**
+ * Shows coordinates when mouse is near the graph
+ * @param {MouseEvent} event - The mouse event
+ */
 function showCoordinates(event) {
     // Get mouse position relative to the canvas
     const rect = canvas.getBoundingClientRect();
@@ -435,10 +500,17 @@ function showCoordinates(event) {
     }
 }
 
-// Attach the showCoordinates function to mousemove
-canvas.addEventListener('mousemove', showCoordinates);
+/**
+ * Initializes existing equation entries and draws the initial graph
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    initializeEquationEntries();
+    drawGraph();
+});
 
-// Zooming Functionality
+/**
+ * Zooming Functionality
+ */
 canvas.addEventListener('wheel', function (event) {
     event.preventDefault();
 
@@ -465,7 +537,9 @@ canvas.addEventListener('wheel', function (event) {
     drawGraph();
 });
 
-// Panning Functionality
+/**
+ * Panning Functionality
+ */
 canvas.addEventListener('mousedown', function (event) {
     isPanning = true;
     startPan = { x: event.clientX, y: event.clientY };
@@ -497,10 +571,4 @@ canvas.addEventListener('mouseup', function () {
 canvas.addEventListener('mouseleave', function () {
     isPanning = false;
     canvas.style.cursor = 'grab';
-});
-
-// Initialize existing equation entries and draw the initial graph
-document.addEventListener('DOMContentLoaded', function () {
-    initializeEquationEntries();
-    drawGraph();
 });
