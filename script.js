@@ -56,26 +56,26 @@ function addEquationInput() {
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'equationInput';
-    input.placeholder = 'Enter equation in terms of x (e.g., sin(x))';
+    input.placeholder = 'Enter equation in terms of x';
     input.dataset.visible = 'true'; // Set default visibility
 
     // Toggle Visibility Button
     const toggleVisibilityButton = document.createElement('button');
     toggleVisibilityButton.className = 'toggleVisibilityButton';
     toggleVisibilityButton.title = 'Toggle Visibility';
-    const eyeImg = document.createElement('img');
-    eyeImg.src = 'icons/eye.svg';
-    eyeImg.alt = 'Toggle Visibility';
-    toggleVisibilityButton.appendChild(eyeImg);
+    const eyeIcon = document.createElement('span');
+    eyeIcon.className = 'material-icons';
+    eyeIcon.textContent = 'visibility';
+    toggleVisibilityButton.appendChild(eyeIcon);
 
     // Remove Button
     const removeButton = document.createElement('button');
     removeButton.className = 'removeButton';
     removeButton.title = 'Remove Equation';
-    const binImg = document.createElement('img');
-    binImg.src = 'icons/bin.svg';
-    binImg.alt = 'Remove';
-    removeButton.appendChild(binImg);
+    const deleteIcon = document.createElement('span');
+    deleteIcon.className = 'material-icons';
+    deleteIcon.textContent = 'delete';
+    removeButton.appendChild(deleteIcon);
 
     // Inline Error Message
     const errorMessage = document.createElement('span');
@@ -91,6 +91,8 @@ function addEquationInput() {
     toggleVisibilityButton.addEventListener('click', function () {
         input.dataset.visible = input.dataset.visible === 'false' ? 'true' : 'false';
         toggleVisibilityButton.classList.toggle('hidden', input.dataset.visible === 'false');
+        // Change icon based on visibility
+        eyeIcon.textContent = input.dataset.visible === 'false' ? 'visibility_off' : 'visibility';
         drawGraph();
     });
 
@@ -120,6 +122,7 @@ function initializeEquationEntries() {
         const toggleVisibilityButton = entry.getElementsByClassName('toggleVisibilityButton')[0];
         const removeButton = entry.getElementsByClassName('removeButton')[0];
         const errorMessage = entry.getElementsByClassName('error-message')[0];
+        const eyeIcon = toggleVisibilityButton.querySelector('.material-icons');
 
         // Ensure data-visible is set
         if (!input.dataset.visible) {
@@ -130,6 +133,8 @@ function initializeEquationEntries() {
         toggleVisibilityButton.addEventListener('click', function () {
             input.dataset.visible = input.dataset.visible === 'false' ? 'true' : 'false';
             toggleVisibilityButton.classList.toggle('hidden', input.dataset.visible === 'false');
+            // Change icon based on visibility
+            eyeIcon.textContent = input.dataset.visible === 'false' ? 'visibility_off' : 'visibility';
             drawGraph();
         });
 
@@ -148,7 +153,7 @@ function initializeEquationEntries() {
 
 /**
  * Validates the equation and redraws the graph if valid
- * Displays inline error messages if invalid
+ * Displays inline error messages as overlays if invalid
  * @param {string} equationInput - The equation input by the user
  * @param {HTMLElement} equationEntry - The parent div of the equation input
  */
@@ -171,10 +176,10 @@ function validateAndDrawGraph(equationInput, equationEntry) {
         equationEntry.classList.remove('error');
         drawGraph();
     } catch (error) {
-        // If there's a compilation error, display error message inline
+        // If there's a compilation error, display error message inline overlay above the input
         errorMessage.textContent = `Invalid equation: "${equationInput}". Please check your input.`;
 
-        // Add 'error' class to equationEntry for styling
+        // Add 'error' class to equationEntry for styling (shows the overlay)
         equationEntry.classList.add('error');
 
         // Remove the error highlight when the user focuses back on the input
@@ -506,6 +511,26 @@ function showCoordinates(event) {
 document.addEventListener('DOMContentLoaded', function () {
     initializeEquationEntries();
     drawGraph();
+
+    // Initialize Tutorial Overlay Functionality
+    const tutorialButton = document.getElementById('tutorialButton');
+    const tutorialOverlay = document.getElementById('tutorialOverlay');
+    const closeTutorial = document.querySelector('.close-tutorial');
+
+    tutorialButton.addEventListener('click', function () {
+        tutorialOverlay.classList.add('active');
+    });
+
+    closeTutorial.addEventListener('click', function () {
+        tutorialOverlay.classList.remove('active');
+    });
+
+    // Optional: Close the overlay when clicking outside the tutorial content
+    tutorialOverlay.addEventListener('click', function (event) {
+        if (event.target === tutorialOverlay) {
+            tutorialOverlay.classList.remove('active');
+        }
+    });
 });
 
 /**

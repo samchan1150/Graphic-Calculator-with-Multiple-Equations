@@ -7,6 +7,9 @@
         
     <!-- Include Math.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    
+    <!-- Include Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 
@@ -22,20 +25,43 @@
 
         <!-- Equation Input Section -->
         <div id="inputSection">
+            <!-- Tutorial Icon and Overlay -->
+            <div id="tutorialContainer">
+                <button id="tutorialButton" class="material-icons" title="Tutorial">help_outline</button>
+                <div id="tutorialOverlay" class="tutorial-overlay">
+                    <div class="tutorial-content">
+                        <span class="material-icons close-tutorial">close</span>
+                        <h2>How to Enter Equations</h2>
+                        <p>Enter your equations using standard mathematical syntax. Ensure that all parentheses are closed and that operators are correctly placed. For example:</p>
+                        <ul>
+                            <li><strong>Quadratic Equation:</strong> x^2 + 3x + 2</li>
+                            <li><strong>Trigonometric Function:</strong> sin(x)</li>
+                            <li><strong>Exponential Function:</strong> e^(x)</li>
+                        </ul>
+                        <p>Use '^' for exponents, and functions like sin, cos, tan, log, and exp for trigonometric and exponential functions.</p>
+                    </div>
+                </div>
+            </div>
+
             <div id="equationsContainer">
                 <div class="equationEntry">
-                    <input type="text" class="equationInput" placeholder="Enter equation in terms of x (e.g., sin(x))">
+                    <input type="text" class="equationInput" placeholder="Enter equation in terms of x">
+                    
+                    <!-- Toggle Visibility Button with Material Icon -->
                     <button class="toggleVisibilityButton" title="Toggle Visibility">
-                        <img src="icons/eye.svg" alt="Toggle Visibility">
+                        <span class="material-icons">visibility</span>
                     </button>
+                    
+                    <!-- Remove Button with Material Icon -->
                     <button class="removeButton" title="Remove Equation">
-                        <img src="icons/bin.svg" alt="Remove">
+                        <span class="material-icons">delete</span>
                     </button>
+                    
                     <span class="error-message"></span> <!-- Inline Error Message -->
                 </div>
             </div>
             <button id="addEquationButton">Add Another Equation</button>
-
+        
             <!-- Value Calculator Section -->
             <div id="valueCalculator">
                 <input type="number" id="xValue" placeholder="Enter x value">

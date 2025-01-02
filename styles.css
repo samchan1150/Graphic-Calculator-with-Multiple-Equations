@@ -13,6 +13,8 @@
     --input-background: #2c2c2c;
     --input-border: #444444;
     --canvas-border: #444444;
+    --overlay-background: rgba(0, 0, 0, 0.8);
+    --tutorial-box: #1e1e1e;
     
     /* Font Settings */
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -79,13 +81,77 @@ h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
+/* Tutorial Container */
+#tutorialContainer {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+#tutorialButton {
+    background-color: var(--button-background);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+#tutorialButton:hover {
+    background-color: var(--button-hover);
+}
+
+#tutorialButton .material-icons {
+    font-size: 24px;
+    color: var(--primary-text);
+}
+
+/* Tutorial Overlay */
+.tutorial-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-background);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.tutorial-overlay.active {
+    display: flex;
+}
+
+.tutorial-content {
+    background-color: var(--tutorial-box);
+    color: var(--primary-text);
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+
+.close-tutorial {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: var(--primary-text);
+    font-size: 24px;
+}
+
 #equationsContainer {
     display: flex;
     flex-direction: column;
     gap: 10px;
     max-height: 300px;
     overflow-y: auto;
-    padding-right: 5px;
+    padding: 5px;
 }
 
 /* Equation Entry */
@@ -130,36 +196,17 @@ h1 {
     background-color: var(--button-hover);
 }
 
-.removeButton img,
-.toggleVisibilityButton img {
-    width: var(--icon-size);
-    height: var(--icon-size);
+/* Material Icons Styling */
+.removeButton .material-icons,
+.toggleVisibilityButton .material-icons {
+    font-size: var(--icon-size);
+    color: var(--primary-text);
 }
 
-/* Change Eye Icon Appearance When Hidden */
-.toggleVisibilityButton.hidden img {
-    filter: brightness(0) invert(1); /* Invert colors to indicate hidden state */
-}
-
-/* Inline Error Message as Overlay */
-.error-message {
-    position: absolute;
-    top: 100%; /* Position below the equation input */
-    left: 0;
-    background-color: rgba(255, 77, 77, 0.9); /* Semi-transparent red background */
-    color: #ffffff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    white-space: nowrap;
-    margin-top: 5px;
-    display: none; /* Hidden by default */
-    z-index: 10; /* Ensure it overlays other elements */
-}
-
-/* Display Error Message When There is an Error */
-.equationEntry.error .error-message {
-    display: block;
+/* Change Toggle Visibility Icon Based on State */
+.toggleVisibilityButton.hidden .material-icons {
+    /* Optionally, switch to 'visibility_off' when hidden */
+    opacity: 0.7; /* To indicate different state */
 }
 
 /* Action Buttons */
@@ -228,6 +275,34 @@ h1 {
     overflow-y: auto;
 }
 
+/* Inline Error Message as Overlay Above Input */
+.error-message {
+    position: absolute;
+    bottom: 100%; /* Position above the input */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 77, 77, 0.9); /* Semi-transparent red background */
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    margin-bottom: 5px;
+    display: none; /* Hidden by default */
+    z-index: 10; /* Ensure it overlays other elements */
+}
+
+/* Display Error Message When There is an Error */
+.equationEntry.error .error-message {
+    display: block;
+}
+
+/* Highlight Equation Entry on Error */
+.equationEntry.error .equationInput {
+    border-color: #ff4d4d;
+    background-color: #ffe6e6;
+}
+
 /* Scrollbar Styling for Equations Container */
 #equationsContainer::-webkit-scrollbar {
     width: 6px;
@@ -259,7 +334,7 @@ button:focus,
 .equationInput:focus,
 #valueCalculator input[type="number"]:focus {
     outline: none;
-    box-shadow: 2px var(--accent-color);
+    box-shadow: 0 0 0 2px var(--accent-color);
 }
 
 /* Smooth Transitions */
