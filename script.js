@@ -1,5 +1,8 @@
-// Import internal organization modules if applicable
-// Example: import math from 'internal-math-library'; // Adjust based on actual module paths
+// script.js
+
+// Replace with the actual path to your internal math library if different
+// For example: import math from 'internal-math-library';
+const math = window.math; // Assuming math.js is loaded via script tag in index.html
 
 // Global variables for zoom and pan
 let xMin = -10;
@@ -17,7 +20,7 @@ const canvas = document.getElementById('graphCanvas');
 let equations = [];
 
 // Colors for different equations
-const colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown', 'cyan'];
+const colors = ['#1E90FF', '#FF4500', '#32CD32', '#FFD700', '#FF69B4', '#8A2BE2', '#00CED1'];
 let colorIndex = 0;
 
 // Add event listener for adding new equations
@@ -26,6 +29,17 @@ document.getElementById('addEquationButton').addEventListener('click', addEquati
 // Initialize the cursor style
 canvas.style.cursor = 'grab';
 
+// Debounce function to limit the rate of function execution
+function debounce(func, delay) {
+    let debounceTimer;
+    return function(...args) {
+        const context = this;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    }
+}
+
+// Function to add a new equation input entry
 function addEquationInput() {
     const equationsContainer = document.getElementById('equationsContainer');
     const equationEntry = document.createElement('div');
@@ -36,44 +50,133 @@ function addEquationInput() {
     input.type = 'text';
     input.className = 'equationInput';
     input.placeholder = 'Enter equation in terms of x (e.g., sin(x))';
+    input.dataset.visible = 'true'; // Set default visibility
+
+    const toggleVisibilityButton = document.createElement('button');
+    toggleVisibilityButton.className = 'toggleVisibilityButton';
+    toggleVisibilityButton.title = 'Toggle Visibility';
+    const eyeImg = document.createElement('img');
+    eyeImg.src = 'icons/eye.svg'; // Ensure this path is correct
+    eyeImg.alt = 'Toggle Visibility';
+    toggleVisibilityButton.appendChild(eyeImg);
 
     const removeButton = document.createElement('button');
-    removeButton.textContent = 'Remove';
-    removeButton.style.marginLeft = '5px';
-    removeButton.onclick = function() {
+    removeButton.className = 'removeButton';
+    removeButton.title = 'Remove Equation';
+    const binImg = document.createElement('img');
+    binImg.src = 'icons/bin.svg'; // Ensure this path is correct
+    binImg.alt = 'Remove';
+    removeButton.appendChild(binImg);
+
+    // Event listener to remove the equation entry
+    removeButton.addEventListener('click', function () {
         equationsContainer.removeChild(equationEntry);
-    };
+        drawGraph();
+    });
+
+    // Event listener to toggle visibility
+    toggleVisibilityButton.addEventListener('click', function () {
+        input.dataset.visible = input.dataset.visible === 'false' ? 'true' : 'false';
+        toggleVisibilityButton.classList.toggle('hidden', input.dataset.visible === 'false');
+        drawGraph();
+    });
+
+    // Event listener for input changes to auto-update the graph on blur
+    input.addEventListener('blur', function () {
+        validateAndDrawGraph(input.value, equationEntry);
+    });
 
     equationEntry.appendChild(input);
+    equationEntry.appendChild(toggleVisibilityButton);
     equationEntry.appendChild(removeButton);
     equationsContainer.appendChild(equationEntry);
 }
 
+// Function to initialize existing equation entries on page load
+function initializeEquationEntries() {
+    const equationEntries = document.getElementsByClassName('equationEntry');
+
+    for (let entry of equationEntries) {
+        const input = entry.getElementsByClassName('equationInput')[0];
+        const toggleVisibilityButton = entry.getElementsByClassName('toggleVisibilityButton')[0];
+        const removeButton = entry.getElementsByClassName('removeButton')[0];
+
+        // Ensure data-visible is set
+        if (!input.dataset.visible) {
+            input.dataset.visible = 'true';
+        }
+
+        // Event listener to toggle visibility
+        toggleVisibilityButton.addEventListener('click', function () {
+            input.dataset.visible = input.dataset.visible === 'false' ? 'true' : 'false';
+            toggleVisibilityButton.classList.toggle('hidden', input.dataset.visible === 'false');
+            drawGraph();
+        });
+
+        // Event listener to remove the equation entry
+        removeButton.addEventListener('click', function () {
+            entry.parentNode.removeChild(entry);
+            drawGraph();
+        });
+
+        // Event listener for input changes to auto-update the graph on blur
+        input.addEventListener('blur', function () {
+            validateAndDrawGraph(input.value, entry);
+        });
+    }
+}
+
+// Function to validate the equation and redraw the graph
+function validateAndDrawGraph(equationInput, equationEntry) {
+    if (equationInput.trim() === '') {
+        // If the input is empty, simply redraw the graph without this equation
+        drawGraph();
+        return;
+    }
+
+    try {
+        // Attempt to compile the equation
+        math.compile(equationInput);
+        // If successful, redraw the graph
+        drawGraph();
+    } catch (error) {
+        // If there's a compilation error, alert the user and possibly highlight the input
+        alert('Invalid equation: "' + equationInput + '". Please check your input.');
+        // Optionally, you can add a class to highlight the erroneous input
+        equationEntry.classList.add('error');
+        // Remove the error highlight when the user focuses back on the input
+        const input = equationEntry.getElementsByClassName('equationInput')[0];
+        input.addEventListener('focus', function removeErrorHighlight() {
+            equationEntry.classList.remove('error');
+            input.removeEventListener('focus', removeErrorHighlight);
+        });
+    }
+}
+
+// Function to draw the graph
 function drawGraph() {
     // Get all user-entered equations
-    const equationInputs = document.getElementsByClassName('equationInput');
+    const equationEntries = document.getElementsByClassName('equationEntry');
     equations = [];
     colorIndex = 0; // Reset color index for consistent coloring
 
     // Compile each equation
-    for (let input of equationInputs) {
+    for (let entry of equationEntries) {
+        const input = entry.getElementsByClassName('equationInput')[0];
         const equationInput = input.value.trim();
+        const isVisible = input.dataset.visible !== 'false'; // Default to visible
+
         if (equationInput === '') continue; // Skip empty inputs
 
         try {
             const compiled = math.compile(equationInput);
             const color = colors[colorIndex % colors.length];
-            equations.push({ compiled, color });
+            equations.push({ compiled, color, visible: isVisible });
             colorIndex++;
         } catch (error) {
-            alert('Invalid equation: "' + equationInput + '". Please check your input.');
-            return;
+            // Skip rendering invalid equations
+            continue;
         }
-    }
-
-    if (equations.length === 0) {
-        alert('Please enter at least one valid equation.');
-        return;
     }
 
     // Get the canvas context
@@ -86,21 +189,22 @@ function drawGraph() {
     const scaleX = canvas.width / (xMax - xMin);
     const scaleY = canvas.height / (yMax - yMin);
 
-    // Increase the number of samples
-    const steps = canvas.width * 10; // You can adjust the multiplier
-    const dx = (xMax - xMin) / steps;
-
     // Draw gridlines and axes
     drawGridlines(ctx, scaleX, scaleY);
     drawAxes(ctx, scaleX, scaleY);
 
-    // Plot each equation
+    // Plot each visible equation
     equations.forEach(equationObj => {
+        if (!equationObj.visible) return; // Skip if not visible
+
         ctx.beginPath();
         ctx.strokeStyle = equationObj.color;
         ctx.lineWidth = 2;
 
         let firstPoint = true;
+        const steps = canvas.width * 10; // Adjust the multiplier if needed
+        const dx = (xMax - xMin) / steps;
+
         for (let i = 0; i <= steps; i++) {
             const x = xMin + i * dx;
             let y;
@@ -135,6 +239,7 @@ function drawGraph() {
     });
 }
 
+// Function to draw gridlines
 function drawGridlines(ctx, scaleX, scaleY) {
     ctx.beginPath();
     ctx.strokeStyle = '#e0e0e0';
@@ -161,6 +266,7 @@ function drawGridlines(ctx, scaleX, scaleY) {
     ctx.stroke();
 }
 
+// Function to draw axes
 function drawAxes(ctx, scaleX, scaleY) {
     ctx.beginPath();
     ctx.strokeStyle = '#000000';
@@ -197,6 +303,7 @@ function drawAxes(ctx, scaleX, scaleY) {
     }
 }
 
+// Function to calculate grid spacing
 function calculateGridSpacing(min, max) {
     const range = Math.abs(max - min);
     const roughSpacing = range / 10;
@@ -208,6 +315,7 @@ function calculateGridSpacing(min, max) {
     return magnitude;
 }
 
+// Function to calculate Y value based on user input
 function calculateYValue() {
     // Get the user-entered x value
     const xInput = document.getElementById('xValue').value;
@@ -219,17 +327,13 @@ function calculateYValue() {
         return;
     }
 
-    // Check if there are equations defined
-    if (equations.length === 0) {
-        alert('Please enter at least one equation and plot the graph first.');
-        return;
-    }
-
     // Prepare to display y-values for all equations
     const yDisplay = document.getElementById('yValueDisplay');
     yDisplay.innerHTML = ''; // Clear previous results
 
     equations.forEach((equationObj, index) => {
+        if (!equationObj.visible) return; // Skip if not visible
+
         let y;
         try {
             y = equationObj.compiled.evaluate({ x: x });
@@ -245,23 +349,9 @@ function calculateYValue() {
 
         yDisplay.innerHTML += `Equation ${index + 1}: When x = ${x.toFixed(2)}, y = ${y.toFixed(2)}<br>`;
     });
-
-    // Optionally, adjust the graph view based on the last evaluated y
-    const lastY = equations[equations.length - 1].compiled.evaluate({ x: x });
-    if (isFinite(lastY)) {
-        const rangeX = xMax - xMin;
-        const rangeY = yMax - yMin;
-
-        xMin = x - rangeX / 2;
-        xMax = x + rangeX / 2;
-        yMin = lastY - rangeY / 2;
-        yMax = lastY + rangeY / 2;
-
-        // Redraw the graph
-        drawGraph();
-    }
 }
 
+// Function to show coordinates when mouse is near the graph
 function showCoordinates(event) {
     // Get mouse position relative to the canvas
     const rect = canvas.getBoundingClientRect();
@@ -282,6 +372,8 @@ function showCoordinates(event) {
 
     // Iterate through each equation to find the closest point
     equations.forEach(equationObj => {
+        if (!equationObj.visible) return; // Skip if not visible
+
         for (let i = 0; i <= numSamples; i++) {
             // Calculate the x-value for this sample
             const x = xMouse - xRange / 2 + (i / numSamples) * xRange;
@@ -343,7 +435,10 @@ function showCoordinates(event) {
     }
 }
 
-// Zooming
+// Attach the showCoordinates function to mousemove
+canvas.addEventListener('mousemove', showCoordinates);
+
+// Zooming Functionality
 canvas.addEventListener('wheel', function (event) {
     event.preventDefault();
 
@@ -370,7 +465,7 @@ canvas.addEventListener('wheel', function (event) {
     drawGraph();
 });
 
-// Panning
+// Panning Functionality
 canvas.addEventListener('mousedown', function (event) {
     isPanning = true;
     startPan = { x: event.clientX, y: event.clientY };
@@ -404,5 +499,8 @@ canvas.addEventListener('mouseleave', function () {
     canvas.style.cursor = 'grab';
 });
 
-// Attach the showCoordinates function to mousemove
-canvas.addEventListener('mousemove', showCoordinates);
+// Initialize existing equation entries and draw the initial graph
+document.addEventListener('DOMContentLoaded', function () {
+    initializeEquationEntries();
+    drawGraph();
+});

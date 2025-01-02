@@ -1,32 +1,246 @@
+/* styles.css */
+
+/* Define CSS Variables for Easy Theme Management */
+:root {
+    /* Color Palette */
+    --background-color: #121212;
+    --secondary-background: #1e1e1e;
+    --primary-text: #ffffff;
+    --secondary-text: #cccccc;
+    --accent-color: #bb86fc;
+    --button-background: #2c2c2c;
+    --button-hover: #3a3a3a;
+    --input-background: #2c2c2c;
+    --input-border: #444444;
+    --canvas-border: #444444;
+    
+    /* Font Settings */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --icon-size: 20px;
+}
+
+/* Global Styles */
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--primary-text);
+    font-family: var(--font-family);
+}
+
+/* Header */
+h1 {
     text-align: center;
+    padding: 20px 0;
+    margin: 0;
+    background-color: var(--secondary-background);
+    border-bottom: 1px solid #333333;
 }
-#calculator {
-    margin: 20px;
+
+/* Main Container */
+#mainContainer {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 20px;
 }
-#equation {
-    width: 400px;
-    padding: 10px;
-    font-size: 16px;
+
+/* Graph Section */
+#graphSection {
+    flex: 3;
+    background-color: var(--secondary-background);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
+
 #graphCanvas {
-    border: 1px solid #ccc;
-    cursor: grab;
+    display: block;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border: 2px solid var(--canvas-border);
+    border-radius: 4px;
 }
-#graphCanvas:active {
-    cursor: grabbing;
-}
-/* Style for the value calculator */
-#valueCalculator {
-    margin-top: 20px;
-}
-#xValue {
-    width: 200px;
-    padding: 5px;
-    font-size: 16px;
-}
-#yValueDisplay {
-    font-weight: bold;
+
+/* Instruction Text */
+#graphSection h5 {
+    text-align: center;
+    color: var(--secondary-text);
     margin-top: 10px;
+    font-size: 0.9em;
 }
+
+/* Input Section */
+#inputSection {
+    flex: 1;
+    background-color: var(--secondary-background);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#equationsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Equation Entry */
+.equationEntry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.equationInput {
+    flex: 1;
+    padding: 8px 12px;
+    background-color: var(--input-background);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    color: var(--primary-text);
+    font-size: 1em;
+}
+
+.equationInput::placeholder {
+    color: var(--secondary-text);
+}
+
+/* Remove Button */
+.removeButton,
+.toggleVisibilityButton {
+    background-color: var(--button-background);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.removeButton:hover,
+.toggleVisibilityButton:hover {
+    background-color: var(--button-hover);
+}
+
+.removeButton img,
+.toggleVisibilityButton img {
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
+/* Hide the eye icon when equation is hidden */
+.toggleVisibilityButton.hidden img {
+    filter: brightness(0) invert(1);
+}
+
+/* Action Buttons */
+#addEquationButton {
+    width: 100%;
+    padding: 10px 0;
+    margin-top: 10px;
+    background-color: var(--accent-color);
+    color: var(--primary-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+#addEquationButton:hover {
+    background-color: #9b56ff;
+}
+
+/* Value Calculator Section */
+#valueCalculator {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#valueCalculator input[type="number"] {
+    padding: 8px 12px;
+    background-color: var(--input-background);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    color: var(--primary-text);
+    font-size: 1em;
+}
+
+#valueCalculator input[type="number"]::placeholder {
+    color: var(--secondary-text);
+}
+
+#valueCalculator button {
+    padding: 10px;
+    background-color: var(--accent-color);
+    color: var(--primary-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+#valueCalculator button:hover {
+    background-color: #9b56ff;
+}
+
+#yValueDisplay {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--input-background);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    color: var(--secondary-text);
+    min-height: 40px;
+    font-size: 0.95em;
+    overflow-y: auto;
+}
+
+/* Scrollbar Styling for Equations Container */
+#equationsContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+#equationsContainer::-webkit-scrollbar-track {
+    background: var(--secondary-background);
+}
+
+#equationsContainer::-webkit-scrollbar-thumb {
+    background-color: var(--button-hover);
+    border-radius: 3px;
+}
+
+/* Responsive Design */
+@media (max-width: 1000px) {
+    #mainContainer {
+        flex-direction: column;
+    }
+
+    #graphSection,
+    #inputSection {
+        width: 100%;
+    }
+}
+
+/* Button Focus Styles */
+button:focus,
+.equationInput:focus,
+#valueCalculator input[type="number"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+/* Smooth Transitions */
+* {
+    transition: all 0.3s ease;
+}
+

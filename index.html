@@ -12,7 +12,7 @@
 
     <h1>Graphic Calculator</h1>
 
-    <div id="mainContainer" style="display: flex; justify-content: space-between;">
+    <div id="mainContainer">
 
         <!-- Graph Section -->
         <div id="graphSection">
@@ -21,17 +21,22 @@
         </div>
 
         <!-- Equation Input Section -->
-        <div id="inputSection" style="width: 300px;">
+        <div id="inputSection">
             <div id="equationsContainer">
                 <div class="equationEntry">
-                    <input type="text" class="equationInput" placeholder="Enter equation in terms of x (e.g., x^2 + x^3)">
+                    <input type="text" class="equationInput" placeholder="Enter equation in terms of x (e.g., sin(x))">
+                    <button class="toggleVisibilityButton" title="Toggle Visibility">
+                        <img src="icons/eye.svg" alt="Toggle Visibility">
+                    </button>
+                    <button class="removeButton" title="Remove Equation">
+                        <img src="icons/bin.svg" alt="Remove">
+                    </button>
                 </div>
             </div>
             <button id="addEquationButton">Add Another Equation</button>
-            <button onclick="drawGraph()">Plot Graph</button>
 
-            <!-- New value calculator section -->
-            <div id="valueCalculator" style="margin-top: 20px;">
+            <!-- Value Calculator Section -->
+            <div id="valueCalculator">
                 <input type="number" id="xValue" placeholder="Enter x value">
                 <button onclick="calculateYValue()">Calculate Y</button>
                 <p id="yValueDisplay"></p>
